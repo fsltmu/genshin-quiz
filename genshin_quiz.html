@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>测测你是原神里的谁</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #87CEEB 0%, #E0F7FA 35%, #FFF8E1 100%);
+      position: relative;
+      overflow-x: hidden;
+      color: #333;
+    }
+
+    /* 白云装饰 */
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      background: rgba(255, 255, 255, 0.55);
+      border-radius: 50%;
+      filter: blur(1px);
+      z-index: 0;
+    }
+    body::before {
+      width: 180px;
+      height: 60px;
+      top: 8%;
+      left: -40px;
+      box-shadow: 
+        120px -20px 0 -10px rgba(255,255,255,0.5),
+        240px 10px 0 -15px rgba(255,255,255,0.45);
+    }
+    body::after {
+      width: 160px;
+      height: 55px;
+      top: 22%;
+      right: -30px;
+      box-shadow: 
+        -100px 15px 0 -8px rgba(255,255,255,0.5),
+        -220px -10px 0 -12px rgba(255,255,255,0.4);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+      width: 100%;
+      max-width: 420px;
+      padding: 32px 24px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* 欢迎页 */
+    .welcome {
+      text-align: center;
+    }
+
+    .welcome-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      display: inline-block;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #2c3e50;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: #5a6a7a;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .start-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #f6b93b 0%, #f9ca24 100%);
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(246, 185, 59, 0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .start-btn:active {
+      transform: scale(0.98);
+    }
+
+    .start-btn:hover {
+      box-shadow: 0 8px 24px rgba(246, 185, 59, 0.45);
+    }
+
+    /* 答题页 */
+    .quiz-header {
+      margin-bottom: 24px;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #6c7a89;
+      margin-bottom: 10px;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background: #eef2f5;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #74b9ff 0%, #f9ca24 100%);
+      border-radius: 5px;
+      transition: width 0.3s ease;
+    }
+
+    .question-number {
+      font-size: 13px;
+      color: #74b9ff;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .question-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2c3e50;
+      line-height: 1.5;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .option-btn {
+      width: 100%;
+      padding: 16px;
+      text-align: left;
+      font-size: 15px;
+      color: #34495e;
+      background: #f8fafc;
+      border: 2px solid transparent;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+      line-height: 1.5;
+    }
+
+    .option-btn:hover {
+      background: #fff;
+      border-color: #74b9ff;
+      box-shadow: 0 4px 12px rgba(116, 185, 255, 0.15);
+    }
+
+    .option-btn:active {
+      transform: scale(0.98);
+    }
+
+    .back-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 15px;
+      color: #7f8c8d;
+      background: transparent;
+      border: 1px solid #dfe6e9;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .back-btn:hover {
+      background: #f8fafc;
+      color: #5a6a7a;
+    }
+
+    .back-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* 结果页 */
+    .result {
+      text-align: center;
+    }
+
+    .result-label {
+      font-size: 14px;
+      color: #7f8c8d;
+      margin-bottom: 8px;
+    }
+
+    .result-name {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .result-emoji {
+      font-size: 72px;
+      margin-bottom: 16px;
+      display: inline-block;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .result-desc {
+      font-size: 15px;
+      color: #4a5568;
+      line-height: 1.8;
+      margin-bottom: 28px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 16px;
+      text-align: left;
+    }
+
+    .restart-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .restart-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* 各结果主题色 */
+    .theme-traveler .result-name { color: #f6b93b; }
+    .theme-traveler .restart-btn { background: linear-gradient(135deg, #f6b93b 0%, #f9ca24 100%); box-shadow: 0 6px 20px rgba(246, 185, 59, 0.35); }
+
+    .theme-venti .result-name { color: #1abc9c; }
+    .theme-venti .restart-btn { background: linear-gradient(135deg, #1abc9c 0%, #2ecc71 100%); box-shadow: 0 6px 20px rgba(26, 188, 156, 0.35); }
+
+    .theme-zhongli .result-name { color: #b08d55; }
+    .theme-zhongli .restart-btn { background: linear-gradient(135deg, #b08d55 0%, #d4a373 100%); box-shadow: 0 6px 20px rgba(176, 141, 85, 0.35); }
+
+    .theme-raiden .result-name { color: #8e44ad; }
+    .theme-raiden .restart-btn { background: linear-gradient(135deg, #8e44ad 0%, #a55eea 100%); box-shadow: 0 6px 20px rgba(142, 68, 173, 0.35); }
+
+    .theme-nahida .result-name { color: #27ae60; }
+    .theme-nahida .restart-btn { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); box-shadow: 0 6px 20px rgba(39, 174, 96, 0.35); }
+
+    .theme-furina .result-name { color: #3498db; }
+    .theme-furina .restart-btn { background: linear-gradient(135deg, #3498db 0%, #45aaf2 100%); box-shadow: 0 6px 20px rgba(52, 152, 219, 0.35); }
+
+    /* 电脑端微调 */
+    @media (min-width: 768px) {
+      .card {
+        padding: 40px 36px;
+        max-width: 480px;
+      }
+      h1 { font-size: 30px; }
+      .question-text { font-size: 20px; }
+      .result-name { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" id="card">
+      <!-- 欢迎页 -->
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">🌟</div>
+        <h1>测测你是原神里的谁</h1>
+        <p class="subtitle">15 道性格测试题，带你穿越提瓦特大陆，找到最像自己的那位伙伴。</p>
+        <button class="start-btn" onclick="startQuiz()">开始测试</button>
+      </div>
+
+      <!-- 答题页 -->
+      <div class="quiz hidden" id="quiz">
+        <div class="quiz-header">
+          <div class="progress-text">
+            <span>进度</span>
+            <span id="progress-label">第 1 / 15 题</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 6.67%"></div>
+          </div>
+        </div>
+        <div class="question-number" id="question-number">第 1 题</div>
+        <h2 class="question-text" id="question-text"></h2>
+        <div class="options" id="options"></div>
+        <button class="back-btn" id="back-btn" onclick="goBack()">← 返回上一题</button>
+      </div>
+
+      <!-- 结果页 -->
+      <div class="result hidden" id="result">
+        <div class="result-label">你的测试结果</div>
+        <div class="result-emoji" id="result-emoji">✨</div>
+        <h2 class="result-name" id="result-name"></h2>
+        <div class="result-desc" id="result-desc"></div>
+        <button class="restart-btn" id="restart-btn" onclick="restartQuiz()">重新测试</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 角色数据
+    const characters = {
+      traveler: {
+        name: "旅行者（空 / 荧）",
+        emoji: "🌠",
+        desc: "你像穿越星海的旅行者，心中装着对未知的好奇与对重要之人的执着。你愿意为了寻找答案踏遍七国，也能在旅途中为陌生人停下脚步。你的力量来自伙伴，你的温柔来自经历。无论前路多远，你都会继续向前。"
+      },
+      venti: {
+        name: "温迪",
+        emoji: "🍃",
+        desc: "你像吟游诗人温迪，热爱自由、诗意与微风。你不喜欢被束缚，总能用轻松的态度化解紧张，用一首歌把大家聚在一起。你的内心比表面更通透，看似随性，其实比谁都清楚什么最重要。"
+      },
+      zhongli: {
+        name: "钟离",
+        emoji: "🪨",
+        desc: "你像契约之神钟离，沉稳、可靠，带着岁月沉淀的智慧。你喜欢观察世界，重视承诺与传统，在关键时刻总能给出最踏实的建议。你不张扬，却是身边人最想依靠的那座山。"
+      },
+      raiden: {
+        name: "雷电将军",
+        emoji: "⚡",
+        desc: "你像雷电将军，目标明确、意志坚定，拥有不容置疑的行动力。你追求完美，对自己要求极高，也习惯把责任扛在肩上。在你的世界里，没有做不到，只有还未完成。"
+      },
+      nahida: {
+        name: "纳西妲",
+        emoji: "🌿",
+        desc: "你像小吉祥草王纳西妲，聪慧、温柔，对世界充满求知欲。你喜欢观察与思考，愿意理解每一个人的处境。你的智慧不用于凌驾他人，而是让身边的人都能成长。"
+      },
+      furina: {
+        name: "芙宁娜",
+        emoji: "🎭",
+        desc: "你像芙宁娜，天生属于舞台，拥有独特的魅力与丰富的情感。你或许有过不为人知的坚强，但展现在人前的是最闪亮的自己。你相信故事、相信戏剧，也相信人心深处的真实。"
+      }
+    };
+
+    // 题目数据：每题 4 个选项，分别对应不同角色
+    const questions = [
+      {
+        text: "当你踏上提瓦特大陆，第一眼看到的是什么风景最让你心动？",
+        options: [
+          { text: "无边无际的天空与远方", char: "traveler" },
+          { text: "微风拂过的高原与诗歌", char: "venti" },
+          { text: "巍峨庄严的山岩古殿", char: "zhongli" },
+          { text: "静谧葱茏的森林与知识", char: "nahida" }
+        ]
+      },
+      {
+        text: "旅途中遇到一位陌生人求助，你会？",
+        options: [
+          { text: "毫不犹豫地伸出援手", char: "traveler" },
+          { text: "先听他讲讲有趣的故事", char: "venti" },
+          { text: "观察判断再行动", char: "zhongli" },
+          { text: "分析他的真正意图", char: "nahida" }
+        ]
+      },
+      {
+        text: "你最喜欢怎样的冒险节奏？",
+        options: [
+          { text: "自由探索，随时出发", char: "traveler" },
+          { text: "随心所欲，走走停停", char: "venti" },
+          { text: "稳扎稳打，步步为营", char: "zhongli" },
+          { text: "雷厉风行，目标明确", char: "raiden" }
+        ]
+      },
+      {
+        text: "面对强大的敌人，你的战斗风格是？",
+        options: [
+          { text: "灵活应变，寻找破绽", char: "traveler" },
+          { text: "轻盈飘逸，以巧取胜", char: "venti" },
+          { text: "不动如山，以守为攻", char: "zhongli" },
+          { text: "一击果决，雷霆万钧", char: "raiden" }
+        ]
+      },
+      {
+        text: "朋友情绪低落时，你会如何安慰？",
+        options: [
+          { text: "默默陪伴，一起度过", char: "traveler" },
+          { text: "讲笑话或带他去散心", char: "venti" },
+          { text: "给出成熟可靠的建议", char: "zhongli" },
+          { text: "理性分析问题所在", char: "nahida" }
+        ]
+      },
+      {
+        text: "你如何看待“自由”？",
+        options: [
+          { text: "是旅途的意义本身", char: "traveler" },
+          { text: "是风与诗的最高追求", char: "venti" },
+          { text: "需以责任与契约承载", char: "zhongli" },
+          { text: "应在秩序之下实现", char: "raiden" }
+        ]
+      },
+      {
+        text: "如果可以学习一种技艺，你会选择？",
+        options: [
+          { text: "剑术与各种战斗技巧", char: "traveler" },
+          { text: "吟游诗琴与歌唱", char: "venti" },
+          { text: "茶道、书法与历史", char: "zhongli" },
+          { text: "表演、戏剧与舞台艺术", char: "furina" }
+        ]
+      },
+      {
+        text: "你理想的生活环境是？",
+        options: [
+          { text: "不断变化的旅途之中", char: "traveler" },
+          { text: "可以自由歌唱的城邦", char: "venti" },
+          { text: "千年沉淀的繁华国度", char: "zhongli" },
+          { text: "庄严静谧的神社庭院", char: "raiden" }
+        ]
+      },
+      {
+        text: "遇到难以解决的困境，你会？",
+        options: [
+          { text: "不断尝试，直到找到出路", char: "traveler" },
+          { text: "换个心情，灵感自然来", char: "venti" },
+          { text: "回顾历史，寻找前车之鉴", char: "zhongli" },
+          { text: "集中意志，一举突破", char: "raiden" }
+        ]
+      },
+      {
+        text: "你最认同哪种人生态度？",
+        options: [
+          { text: "每一步都是新的可能", char: "traveler" },
+          { text: "活在当下，享受诗意", char: "venti" },
+          { text: "饮水思源，不忘初心", char: "zhongli" },
+          { text: "追求完美与永恒", char: "raiden" }
+        ]
+      },
+      {
+        text: "如果拥有神之眼，你希望它代表？",
+        options: [
+          { text: "探索未知的勇气", char: "traveler" },
+          { text: "自由不羁的灵魂", char: "venti" },
+          { text: "守护他人的决心", char: "zhongli" },
+          { text: "洞察万物的智慧", char: "nahida" }
+        ]
+      },
+      {
+        text: "在团队中，你更愿意？",
+        options: [
+          { text: "连接大家，凝聚伙伴", char: "traveler" },
+          { text: "活跃气氛，带来欢乐", char: "venti" },
+          { text: "以独特魅力成为焦点", char: "furina" },
+          { text: "运筹帷幄，掌控节奏", char: "raiden" }
+        ]
+      },
+      {
+        text: "你最向往哪种称号？",
+        options: [
+          { text: "跨越星海之人", char: "traveler" },
+          { text: "自由之歌的传唱者", char: "venti" },
+          { text: "契约与守护的见证者", char: "zhongli" },
+          { text: "智慧与慈爱的化身", char: "nahida" }
+        ]
+      },
+      {
+        text: "当你独处时，通常会？",
+        options: [
+          { text: "规划下一次冒险", char: "traveler" },
+          { text: "写下或哼唱新诗", char: "venti" },
+          { text: "静坐品茶，回忆往事", char: "zhongli" },
+          { text: "思考世界的真相", char: "nahida" }
+        ]
+      },
+      {
+        text: "如果让你为国度举办一场庆典，你会？",
+        options: [
+          { text: "组织大家自由分享旅途故事", char: "traveler" },
+          { text: "办一场吟游诗人的露天音乐会", char: "venti" },
+          { text: "设计庄严典雅的仪式", char: "zhongli" },
+          { text: "策划精彩绝伦的舞台演出", char: "furina" }
+        ]
+      }
+    ];
+
+    let currentIndex = 0;
+    let scores = {};
+    let answers = [];
+
+    function initScores() {
+      scores = { traveler: 0, venti: 0, zhongli: 0, raiden: 0, nahida: 0, furina: 0 };
+    }
+
+    function startQuiz() {
+      currentIndex = 0;
+      answers = [];
+      initScores();
+      document.getElementById("welcome").classList.add("hidden");
+      document.getElementById("quiz").classList.remove("hidden");
+      document.getElementById("result").classList.add("hidden");
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const q = questions[currentIndex];
+      const total = questions.length;
+      const progress = ((currentIndex + 1) / total) * 100;
+
+      document.getElementById("progress-label").textContent = `第 ${currentIndex + 1} / ${total} 题`;
+      document.getElementById("progress-fill").style.width = `${progress}%`;
+      document.getElementById("question-number").textContent = `第 ${currentIndex + 1} 题`;
+      document.getElementById("question-text").textContent = q.text;
+
+      const optionsContainer = document.getElementById("options");
+      optionsContainer.innerHTML = "";
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.textContent = opt.text;
+        btn.onclick = () => selectOption(idx);
+        optionsContainer.appendChild(btn);
+      });
+
+      document.getElementById("back-btn").disabled = currentIndex === 0;
+    }
+
+    function selectOption(optionIndex) {
+      const selectedChar = questions[currentIndex].options[optionIndex].char;
+      scores[selectedChar]++;
+      answers[currentIndex] = selectedChar;
+
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function goBack() {
+      if (currentIndex === 0) return;
+      currentIndex--;
+      const previousChar = answers[currentIndex];
+      if (previousChar) {
+        scores[previousChar]--;
+      }
+      renderQuestion();
+    }
+
+    function showResult() {
+      document.getElementById("quiz").classList.add("hidden");
+      document.getElementById("result").classList.remove("hidden");
+
+      // 找出得分最高的角色（并列时，按数组中较后的角色优先，让稀有角色更容易胜出）
+      const charKeys = Object.keys(characters);
+      let winner = charKeys[0];
+      let maxScore = scores[winner];
+
+      for (let i = 1; i < charKeys.length; i++) {
+        if (scores[charKeys[i]] >= maxScore) {
+          winner = charKeys[i];
+          maxScore = scores[charKeys[i]];
+        }
+      }
+
+      const result = characters[winner];
+      const card = document.getElementById("card");
+
+      // 移除旧主题类，添加新主题类
+      card.className = "card theme-" + winner;
+
+      document.getElementById("result-emoji").textContent = result.emoji;
+      document.getElementById("result-name").textContent = result.name;
+      document.getElementById("result-desc").textContent = result.desc;
+    }
+
+    function restartQuiz() {
+      document.getElementById("card").className = "card";
+      startQuiz();
+    }
+  </script>
+</body>
+</html>
